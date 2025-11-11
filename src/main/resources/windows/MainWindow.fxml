@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.pascalhp.webprobe.controllers.MainWindowController">
+    <center>
+        <VBox prefHeight="200.0" spacing="5.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets left="10.0" />
+            </padding>
+            <children>
+                <HBox fx:id="lineGethostbyname" alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="540.0">
+                    <children>
+                        <ImageView fx:id="iconGethostbyname" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/clock.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="%main_window.report.gethostbyname">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label fx:id="statusGethostbyname" text="%main_window.report.done" visible="false">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox fx:id="lineJndiDns" alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="540.0">
+                    <children>
+                        <ImageView fx:id="iconJndiDns" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/clock.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="%main_window.report.jndi_dns">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label fx:id="statusJndiDns" text="%main_window.report.done" visible="false">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox fx:id="lineDnsjava" alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="540.0">
+                    <children>
+                        <ImageView fx:id="iconDnsjava" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/clock.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="%main_window.report.dnsjava">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label fx:id="statusDnsjava" text="%main_window.report.done" visible="false">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox fx:id="linePing" alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="540.0">
+                    <children>
+                        <ImageView fx:id="iconPing" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/clock.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="%main_window.report.ping">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label fx:id="statusPing" text="%main_window.report.done" visible="false">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox fx:id="lineMtr" alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="540.0">
+                    <children>
+                        <ImageView fx:id="iconMtr" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/clock.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="%main_window.report.mtr">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label fx:id="statusMtr" text="%main_window.report.done" visible="false">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox fx:id="lineHttp" alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="540.0">
+                    <children>
+                        <ImageView fx:id="iconHttp" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/clock.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="%main_window.report.http">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label fx:id="statusHttp" text="%main_window.report.done" visible="false">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox fx:id="lineAllChecksDone" alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="540.0">
+                    <children>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../icons/check.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="%main_window.report.all_checks_done">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox prefHeight="46.0" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="saveReportButton" disable="true" mnemonicParsing="false" onAction="#onSaveReportClick" text="%main_window.save_report" />
+                <Button mnemonicParsing="false" onAction="#onAboutButtonClick" text="%main_window.about" />
+            </children>
+            <padding>
+                <Insets left="10.0" top="10.0" />
+            </padding>
+        </HBox>
+    </bottom>
+   <top>
+      <VBox prefHeight="70.0" BorderPane.alignment="CENTER">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu fx:id="languagesMenu" mnemonicParsing="false" text="%main_window.menu.languages_menu">
+                  <items>
+                    <MenuItem mnemonicParsing="false" onAction="#languagesNotLoadedError" text="Error: languages was not loaded" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <HBox prefHeight="39.0" prefWidth="550.0">
+               <children>
+                  <Label text="%main_window.site_url">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" top="4.0" />
+                     </HBox.margin></Label>
+                  <TextField fx:id="siteUrlText" onKeyPressed="#onKeyPressed" promptText="https://google.com/" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="startCheckButton" mnemonicParsing="false" onAction="#onStartCheckClicked" prefWidth="120.0" text="%main_window.start_check">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin></Button>
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </HBox>
+         </children></VBox>
+   </top>
+</BorderPane>
