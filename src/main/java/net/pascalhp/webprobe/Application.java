@@ -40,7 +40,6 @@ public class Application {
     public ErrorHandler errorHandler;
     public String appDir;
     public String baseDir;
-    public String systemInfo;
 
     private Settings settings;
     private AppVersion version;
@@ -65,7 +64,6 @@ public class Application {
             Localization.switchTo(settings.lang);
         }
 
-        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2,TLSv1.3");
         this.initCacerts();
     }
 
@@ -203,10 +201,10 @@ public class Application {
             try {
                 this.settings = Settings.loadFromFile(settingsFile);
             } catch (FileNotFoundException e) {
-                this.settings = Settings.getDefaultSettings(this);
+                this.settings = Settings.getDefaultSettings();
             } catch (Throwable e) {
                 ErrorHandler.logException(e);
-                this.settings = Settings.getDefaultSettings(this);
+                this.settings = Settings.getDefaultSettings();
             }
         }
         return this.settings;

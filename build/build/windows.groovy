@@ -8,12 +8,27 @@ if (javaHome == null || javaHome.trim().isEmpty()) {
     panic("No \$JAVA_HOME environment variable. Can't build.\n")
 }
 
+// Stop if one of these commands not found
+exec("where mvn")
+exec("where git")
+exec("where 7z")
+
 String projectDir = Bootstrap.projectDir;
 String targetDir = projectDir + "\\target"
 String winDir = projectDir + "\\target\\windows"
 String buildDir = Bootstrap.buildDir
 
-def ver = getVersion()
+Version ver
+String suffix, distributionFile
+if (Bootstrap.isRelease) {
+    ver = getBuildVersion()
+    suffix = ver.getShort()
+    distributionFile = ver.getBuildDir() + "\\Webprobe-${suffix}.zip"
+} else {
+    suffix = "dev"
+    ver = getSourceVersion()
+    distributionFile = targetDir + "\\Webprobe-${suffix}.zip"
+}
 
 out("--- Create directory structure\n")
 exec("rmdir /s /q $winDir", null, true)
@@ -40,7 +55,7 @@ exec("del /f /s /q $targetDir\\classes\\mtr.exe")
 exec("del /f /s /q $targetDir\\classes\\\\icons\\app-icon.iconset")
 ver.saveTo("$targetDir\\classes\\version.json")
 
-out("-- Update CA certificates\n")
+out("--- Update CA certificates\n")
 getFreshCacertStore()
 
 out("--- Build webprobe.jar\n")
@@ -53,5 +68,8 @@ exec("copy $winDir\\Webprobec\\Webprobec.exe $winDir\\Webprobe\\")
 exec("copy $winDir\\Webprobec\\app\\Webprobec.cfg $winDir\\Webprobe\\app\\")
 exec("del /f /s /q $winDir\\Webprobe\\Webprobe.ico")
 exec("rmdir /s /q $winDir\\Webprobec")
+exec("rename $winDir\\Webprobe Webprobe-${suffix}")
+exec("7z a -tzip -mx9 $distributionFile $winDir\\Webprobe-${suffix}")
 
-out("OK\n")
+out("---\n")
+out("The application distribution has been successfully built and saved to file $distributionFile\n")

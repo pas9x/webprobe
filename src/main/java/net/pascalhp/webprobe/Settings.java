@@ -36,14 +36,14 @@ public class Settings {
         return data;
     }
 
-    public void saveToFile(String file) throws Exception {
+    public void saveToFile(String file) {
         SettingsData data = this.saveToDto();
         ObjectMapper mapper = new ObjectMapper();
         ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
         writer.writeValue(new File(file), data);
     }
 
-    public static Settings getDefaultSettings(Application app) {
+    public static Settings getDefaultSettings() {
         Settings settings = new Settings();
         settings.lang = Localization.getInstance().code;
         return settings;

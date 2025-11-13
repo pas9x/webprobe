@@ -3,10 +3,11 @@ package net.pascalhp.webprobe.dto;
 public class AppVersion {
     public int major;
     public int minor;
+    public int build;
     public String commit;
 
     public String getReadable() {
-        return this.major + "." + minor;
+        return this.major + "." + minor + "." + this.build;
     }
 
     public String getFull() {

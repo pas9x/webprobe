@@ -14,12 +14,22 @@ if (!mtrFile.isFile()) {
     System.err.println("It is probable because you have no mtr installed to your system. You can install it with `brew install mtr`.\n");
 }
 
-def ver = getVersion()
-
 String projectDir = Bootstrap.projectDir;
 String targetDir = projectDir + "/target"
-String macosDir = projectDir + "/target/macos"
+String macosDir = targetDir + "/macos"
 String buildDir = Bootstrap.buildDir
+
+Version ver
+String suffix, distributionFile
+if (Bootstrap.isRelease) {
+    ver = getBuildVersion()
+    suffix = ver.getShort()
+    distributionFile = ver.getBuildDir() + "/Webprobe-${suffix}.dmg"
+} else {
+    suffix = "dev"
+    ver = getSourceVersion()
+    distributionFile = targetDir + "/Webprobe-${suffix}.dmg"
+}
 
 out("--- Create directory structure\n")
 exec("rm -rf $macosDir")
@@ -43,7 +53,7 @@ out("-- Compile code\n")
 exec("mvn compile -f $projectDir/pom.xml")
 ver.saveTo("$targetDir/classes/version.json")
 
-out("-- Update CA certificates\n")
+out("--- Update CA certificates\n")
 getFreshCacertStore()
 
 out("--- Copy dependencies, build JRE\n")
@@ -64,7 +74,7 @@ exec("install_name_tool -change /usr/local/opt/jansson/lib/libjansson.4.dylib @e
 
 out("--- Build Webprobe.dmg\n")
 exec("ln -s /Applications $macosDir/Applications")
-exec("hdiutil create -volname Webprobe -srcfolder $macosDir -ov -format UDZO -imagekey zlib-level=9 $targetDir/Webprobe.dmg")
+exec("hdiutil create -volname Webprobe -srcfolder $macosDir -ov -format UDZO -imagekey zlib-level=9 $distributionFile")
 
 out("---\n")
-out("The application distribution has been successfully built and saved to file $targetDir/Webprobe.dmg\n")
+out("The application distribution has been successfully built and saved to file $distributionFile\n")

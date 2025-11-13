@@ -6,6 +6,8 @@ package build
 public class Bootstrap {
     public static String buildDir
     public static String projectDir
+    public static String[] args
+    public static boolean isRelease
 }
 
 Class currentScriptClass = getClass()
@@ -20,6 +22,13 @@ File currentScriptFile = new File(currentScriptClass.protectionDomain.codeSource
 Bootstrap.buildDir = currentScriptFile.parentFile.parent
 Bootstrap.projectDir = currentScriptFile.parentFile.parentFile.parent
 loader.addURL(new File(Bootstrap.buildDir).toURI().toURL())
+Bootstrap.args = args
+
+for (def arg : args) {
+    if (arg.equals("release")) {
+        Bootstrap.isRelease = true
+    }
+}
 
 GroovyShell shell = new GroovyShell(loader)
 shell.evaluate(new File(Bootstrap.buildDir + "/" + runScript))

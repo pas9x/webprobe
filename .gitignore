@@ -1,6 +1,7 @@
 .idea
 dev
 target
+release
 webprobe.iml
 src/main/resources/mtr.exe
 src/main/resources/mtr

@@ -5,6 +5,7 @@ import okhttp3.Response
 import okhttp3.OkHttpClient
 import tools.jackson.databind.ObjectMapper
 import tools.jackson.databind.ObjectWriter
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 import java.nio.charset.StandardCharsets;
 
@@ -150,31 +151,34 @@ class Functions {
         download(url, stream)
     }
 
+    private static void mkdir(String dir) {
+        File dirFile = new File(dir)
+        if (!dirFile.isDirectory()) {
+            if (!dirFile.mkdirs()) {
+                throw new RuntimeException("Failed to create directory $dir")
+            }
+        }
+    }
+
     public static String getTargetDir() {
         if (targetDir == null) {
-            File targetDirFile = new File(Bootstrap.projectDir.toString() + "/target")
-            if (!targetDirFile.isDirectory()) {
-                targetDirFile.mkdir()
-            }
-            File classDirFile = new File(Bootstrap.projectDir.toString() + "/target/classes")
-            if (!classDirFile.isDirectory()) {
-                classDirFile.mkdir()
-            }
-            targetDir = targetDirFile.toString()
+            String dir = Bootstrap.projectDir + "/target"
+            mkdir("$dir/classes")
+            targetDir = dir
         }
         return targetDir
     }
 
     public static String getTmpDir() {
         String tmpDir = getTargetDir() + "/tmp"
-        File tmpDirFile = new File(tmpDir)
-        if (tmpDirFile.exists()) {
-            return tmpDir
-        }
-        if (tmpDirFile.mkdir()) {
-            return tmpDir
-        }
-        throw new RuntimeException("Failed to create directory " + tmpDir)
+        mkdir(tmpDir)
+        return tmpDir
+    }
+
+    public static String getReleaseDir() {
+        String releaseDir = Bootstrap.projectDir + "/release"
+        mkdir(releaseDir)
+        return releaseDir
     }
 
     public static void copyFile(File from, File to) {
@@ -185,7 +189,7 @@ class Functions {
         toStream.close()
     }
 
-    public static Version getVersion() {
+    protected static String getCommit() {
         def execResult = exec("git rev-parse HEAD", null, false, Bootstrap.projectDir)
         if (execResult.stderr.size() > 0) {
             throw new RuntimeException("Git returned stderr of non-zero length. Can't get commit hash.")
@@ -194,16 +198,80 @@ class Functions {
         if (!commit.matches("^[a-f0-9]{8,100}\$")) {
             throw new RuntimeException("Invalid git commit hash: " + commit)
         }
+        return commit
+    }
 
-        def ver = Version.load(Bootstrap.projectDir + "/src/main/resources/version.json")
-        ver.commit = commit
+    public static Version getSourceVersion() {
+        return Version.load(Bootstrap.projectDir + "/src/main/resources/version.json")
+    }
+
+    public static Version getBuildVersion() {
+        Version ver = getSourceVersion()
+        ver.commit = getCommit()
+        VersionMap map = VersionMap.load()
+        BaseVersion baseVersion = map.get(ver.getBase())
+        boolean updateMap = false
+
+        if (baseVersion == null) {
+            baseVersion = new BaseVersion()
+            map.put(ver.getBase(), baseVersion)
+            updateMap = true
+        }
+
+        Integer build = baseVersion.commit2build.get(ver.commit)
+        if (build == null) {
+            build = ++baseVersion.lastBuild
+            baseVersion.commit2build.put(ver.commit, build)
+            updateMap = true
+        }
+
+        if (updateMap) {
+            map.save()
+        }
+
+        ver.build = build
+
         return ver
+    }
+
+    public static int getBuildCpuCount() {
+        int count = Runtime.getRuntime().availableProcessors() - 1
+        if (count < 1) {
+            count = 1
+        }
+        return count
+    }
+
+    protected static class VersionMap extends HashMap<String, BaseVersion> {
+        public static VersionMap load() {
+            File mapFile = new File(getReleaseDir() + "/map.json")
+            if (!mapFile.isFile()) {
+                return new VersionMap()
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            InputStream stream = new FileInputStream(mapFile)
+            InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
+            return mapper.readValue(reader, VersionMap.class)
+        }
+
+        public void save() {
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+            writer.writeValue(new File(getReleaseDir() + "/map.json"), this)
+        }
+    }
+
+    private static class BaseVersion {
+        public int lastBuild = 0
+        public HashMap<String, Integer> commit2build = new HashMap<>()
     }
 
     public static class Version {
         public int major
         public int minor
+        public int build
         public String commit
+        private String file;
 
         public static Version load(String file) {
             ObjectMapper mapper = new ObjectMapper();
@@ -211,6 +279,19 @@ class Functions {
             InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
             Version ver = mapper.readValue(reader, Version.class)
             return ver
+        }
+
+        @JsonIgnore
+        public String getBase() {
+            return "${this.major}.${this.minor}"
+        }
+
+        @JsonIgnore
+        public String getShort() {
+            if (this.build < 1) {
+                throw new RuntimeException("Build number for this version was not determined")
+            }
+            return "${this.major}.${this.minor}.${this.build}"
         }
 
         public void saveTo(String file) {
@@ -229,6 +310,20 @@ class Functions {
 
         public String toString() {
             return toJson()
+        }
+
+        @JsonIgnore
+        public String getBuildDir() {
+            if (this.build < 1) {
+                throw new RuntimeException("Build number for this version was not determined")
+            }
+            String dir = getReleaseDir() + "/${this.major}.${this.minor}.${this.build}"
+            mkdir(dir)
+            File commitFile = new File(dir + "/commit.txt")
+            if (!commitFile.isFile()) {
+                commitFile.write(this.commit)
+            }
+            return dir
         }
     }
 }
